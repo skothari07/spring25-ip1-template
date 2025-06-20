@@ -16,18 +16,44 @@ const userController = () => {
    * @param req The incoming request containing user data.
    * @returns `true` if the body contains valid user fields; otherwise, `false`.
    */
-  const isUserBodyValid = (req: UserRequest): boolean => false;
-  // TODO: Task 1 - Implement the isUserBodyValid function
+  const isUserBodyValid = (req: UserRequest): boolean => {
+    // DONE: Task 1 - Implement the isUserBodyValid function
+    const { username, password } = req.body;
+    if (!username || !password || typeof username !== 'string' || typeof password !== 'string') {
+      return false;
+    }
+    return true;
+  };
 
   /**
    * Handles the creation of a new user account.
-   * @param req The request containing username, email, and password in the body.
+   * @param req The request containing username and password in the body.
    * @param res The response, either returning the created user or an error.
    * @returns A promise resolving to void.
    */
   const createUser = async (req: UserRequest, res: Response): Promise<void> => {
-    // TODO: Task 1 - Implement the createUser function
-    res.status(501).send('Not implemented');
+    // DONE: Task 1 - Implement the createUser function
+    if (!isUserBodyValid(req)) {
+      res.status(400).send('Invalid user body');
+      return;
+    }
+
+    const user: User = {
+      ...req.body,
+      dateJoined: new Date(),
+    };
+
+    try {
+      const createdUser = await saveUser(user);
+
+      if ('error' in createdUser) {
+        throw new Error(createdUser.error);
+      }
+
+      res.status(200).json(createdUser);
+    } catch (error) {
+      res.status(500).send(`Error occurred while creating the user: ${error}`);
+    }
   };
 
   /**
@@ -37,8 +63,25 @@ const userController = () => {
    * @returns A promise resolving to void.
    */
   const userLogin = async (req: UserRequest, res: Response): Promise<void> => {
-    // TODO: Task 1 - Implement the userLogin function
-    res.status(501).send('Not implemented');
+    // DONE: Task 1 - Implement the userLogin function
+    if (!isUserBodyValid(req)) {
+      res.status(400).send('Invalid user body');
+      return;
+    }
+    const loginCredentials: UserCredentials = {
+      username: req.body.username,
+      password: req.body.password,
+    };
+
+    try {
+      const user = await loginUser(loginCredentials);
+      if ('error' in user) {
+        throw new Error(user.error);
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).send(`Error occured while logging in: ${error}`);
+    }
   };
 
   /**
@@ -48,8 +91,19 @@ const userController = () => {
    * @returns A promise resolving to void.
    */
   const getUser = async (req: UserByUsernameRequest, res: Response): Promise<void> => {
-    // TODO: Task 1 - Implement the getUser function
-    res.status(501).send('Not implemented');
+    // DONE: Task 1 - Implement the getUser function
+    const { username } = req.params;
+
+    try {
+      const user = await getUserByUsername(username);
+
+      if ('error' in user) {
+        throw new Error(user.error);
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).send(`Error occurred while fetching user: ${error}`);
+    }
   };
 
   /**
@@ -59,8 +113,16 @@ const userController = () => {
    * @returns A promise resolving to void.
    */
   const deleteUser = async (req: UserByUsernameRequest, res: Response): Promise<void> => {
-    // TODO: Task 1 - Implement the deleteUser function
-    res.status(501).send('Not implemented');
+    // DONE: Task 1 - Implement the deleteUser function
+    try {
+      const deletedUser = await deleteUserByUsername(req.params.username);
+      if ('error' in deletedUser) {
+        throw new Error(deletedUser.error);
+      }
+      res.status(200).json(deletedUser);
+    } catch (error) {
+      res.status(500).send(`Error occurred while deleting user: ${error}`);
+    }
   };
 
   /**
@@ -70,12 +132,31 @@ const userController = () => {
    * @returns A promise resolving to void.
    */
   const resetPassword = async (req: UserRequest, res: Response): Promise<void> => {
-    // TODO: Task 1 - Implement the resetPassword function
-    res.status(501).send('Not implemented');
+    // DONE: Task 1 - Implement the resetPassword function
+    if (!isUserBodyValid(req)) {
+      res.status(400).send('Invalid user body');
+      return;
+    }
+    const { username, password } = req.body;
+
+    try {
+      const updatedUser = await updateUser(username, { password });
+      if ('error' in updatedUser) {
+        throw new Error(updatedUser.error);
+      }
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).send(`Error occurred while resetting user password: ${error}`);
+    }
   };
 
   // Define routes for the user-related operations.
-  // TODO: Task 1 - Add appropriate HTTP verbs and endpoints to the router
+  // DONE: Task 1 - Add appropriate HTTP verbs and endpoints to the router
+  router.post('/signup', createUser);
+  router.post('/login', userLogin);
+  router.get('/getUser/:username', getUser);
+  router.patch('/resetPassword', resetPassword);
+  router.delete('/deleteUser/:username', deleteUser);
 
   return router;
 };
