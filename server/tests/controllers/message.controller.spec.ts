@@ -38,7 +38,50 @@ describe('POST /addMessage', () => {
     expect(response.text).toBe('Invalid request');
   });
 
-  // TODO: Task 2 - Write additional test cases for addMessageRoute
+  // DONE: Task 2 - Write additional test cases for addMessageRoute
+  it('should throw 500 error if message is not saved', async () => {
+    const msg = {
+      _id: new mongoose.Types.ObjectId(),
+      msg: 'CS4530',
+      msgFrom: 'Saurabh',
+      msgDateTime: new Date('2025-11-11'),
+    };
+
+    saveMessageSpy.mockResolvedValue({ error: 'Error occurred while adding a message' });
+    const result = await supertest(app).post('/messaging/addMessage').send({ messageToAdd: msg });
+    expect(result.status).toBe(500);
+    expect('error' in result).toBe(true);
+    expect(result.text).toContain('Error occurred while adding a message');
+  });
+
+  it('should throw an error if any parameter (msgFrom here) is missing from body', async () => {
+    const badMessage = {
+      msg: 'CS4530',
+      msgDateTime: new Date('2025-11-11'),
+    };
+
+    const response = await supertest(app)
+      .post('/messaging/addMessage')
+      .send({ messageToAdd: badMessage });
+
+    expect(response.status).toBe(400);
+    expect(response.text).toBe('Invalid message body');
+  });
+
+  it('should throw an error if any required field is empty or null', async () => {
+    const badMessage = {
+      msg: 'CS4530',
+      msgFrom: '',
+      msgDateTime: null,
+    };
+
+    const response = await supertest(app)
+      .post('/messaging/addMessage')
+      .send({ messageToAdd: badMessage });
+
+    expect(response.status).toBe(400);
+    expect(response.text).toBe('Invalid message body');
+  });
 });
 
 describe('GET /getMessages', () => {

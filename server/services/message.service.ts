@@ -18,7 +18,7 @@ export const saveMessage = async (message: Message): Promise<MessageResponse> =>
 
     return newMsg;
   } catch (error) {
-    return { error: `Error occurred while saving message: ${error}` };
+    return { error: `Error occurred while saving message: ${(error as Error).message}` };
   }
 };
 
