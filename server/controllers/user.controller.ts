@@ -52,7 +52,7 @@ const userController = () => {
 
       res.status(200).json(createdUser);
     } catch (error) {
-      res.status(500).send(`Error occurred while creating the user: ${error}`);
+      res.status(500).send(`Error occurred while creating the user: ${(error as Error).message}`);
     }
   };
 
@@ -80,7 +80,7 @@ const userController = () => {
       }
       res.status(200).json(user);
     } catch (error) {
-      res.status(500).send(`Error occured while logging in: ${error}`);
+      res.status(500).send(`Error occured while logging in: ${(error as Error).message}`);
     }
   };
 
@@ -102,7 +102,7 @@ const userController = () => {
       }
       res.status(200).json(user);
     } catch (error) {
-      res.status(500).send(`Error occurred while fetching user: ${error}`);
+      res.status(500).send(`Error occurred while fetching user: ${(error as Error).message}`);
     }
   };
 
@@ -121,7 +121,7 @@ const userController = () => {
       }
       res.status(200).json(deletedUser);
     } catch (error) {
-      res.status(500).send(`Error occurred while deleting user: ${error}`);
+      res.status(500).send(`Error occurred while deleting user: ${(error as Error).message}`);
     }
   };
 
@@ -146,7 +146,9 @@ const userController = () => {
       }
       res.status(200).json(updatedUser);
     } catch (error) {
-      res.status(500).send(`Error occurred while resetting user password: ${error}`);
+      res
+        .status(500)
+        .send(`Error occurred while resetting user password: ${(error as Error).message}`);
     }
   };
 

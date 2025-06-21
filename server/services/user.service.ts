@@ -22,7 +22,7 @@ export const saveUser = async (user: User): Promise<UserResponse> => {
       dateJoined: newUser.dateJoined,
     };
   } catch (error) {
-    return { error: `Error occurred while saving the user: ${error}` };
+    return { error: `Error occurred while saving the user: ${(error as Error).message}` };
   }
 };
 
@@ -43,7 +43,9 @@ export const getUserByUsername = async (username: string): Promise<UserResponse>
 
     return user as SafeUser;
   } catch (error) {
-    return { error: `Error occurred while retrieving user by username: ${error}` };
+    return {
+      error: `Error occurred while retrieving user by username: ${(error as Error).message}`,
+    };
   }
 };
 
@@ -68,7 +70,7 @@ export const loginUser = async (loginCredentials: UserCredentials): Promise<User
     }
     return authenticatedUser as SafeUser;
   } catch (error) {
-    return { error: `Error occurred while authenticating user: ${error}` };
+    return { error: `Error occurred while authenticating user: ${(error as Error).message}` };
   }
 };
 
@@ -88,7 +90,7 @@ export const deleteUserByUsername = async (username: string): Promise<UserRespon
     }
     return deletedUser as SafeUser;
   } catch (error) {
-    return { error: `Error occurred while deleting the user: ${error}` };
+    return { error: `Error occurred while deleting the user: ${(error as Error).message}` };
   }
 };
 
@@ -119,6 +121,8 @@ export const updateUser = async (
     }
     return updatedUser as SafeUser;
   } catch (error) {
-    return { error: `Error occurred while updating the user's details: ${error}` };
+    return {
+      error: `Error occurred while updating the user's details: ${(error as Error).message}`,
+    };
   }
 };
