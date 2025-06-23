@@ -32,10 +32,9 @@ describe('Message model', () => {
     });
     // DONE: Task 2 - Write a test case for saveMessage when an error occurs
     it('should throw an error if message is not saved', async () => {
-      mockingoose(MessageModel).toReturn(
-        new Error('Error occurred while saving message'),
-        'create',
-      );
+      jest
+        .spyOn(MessageModel, 'create')
+        .mockRejectedValueOnce(new Error('Error occurred while saving message'));
       const result = await saveMessage(message1);
       expect('error' in result).toBe(true);
     });
