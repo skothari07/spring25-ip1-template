@@ -19,13 +19,10 @@ const message2 = {
 describe('Message model', () => {
   beforeEach(() => {
     mockingoose.resetAll();
+    jest.clearAllMocks();
   });
 
   describe('saveMessage', () => {
-    beforeEach(() => {
-      mockingoose.resetAll();
-    });
-
     it('should return the saved message', async () => {
       mockingoose(MessageModel).toReturn(message1, 'create');
 
